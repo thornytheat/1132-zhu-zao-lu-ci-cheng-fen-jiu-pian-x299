@@ -8,6 +8,7 @@ from .chemistry_residuals import service as prediction
 from .alloy_tolerance import service as limits
 from .charge_correction import service as dosing
 from .heat_release import service as finishing
+from .review_queue import service as reviews
 
 ROOT=Path(__file__).resolve().parents[2]
 
@@ -69,6 +70,7 @@ def run(capacity: int | None = None) -> dict:
     prior_check=prediction.control_variance(saved_trials)
     fit_records=[]
     tolerance_records=[]
+    tolerance_by_key={}
     requirements=next(iter(config["grade_bounds"].values())).keys()
     missing=assays.coverage(measurements,requirements)
     for sample in measurements:
@@ -90,6 +92,7 @@ def run(capacity: int | None = None) -> dict:
                          mass_kg=material["mass_kg"],priority=decision["risk"]))
         fit_records.append(dict(炉次=heat,元素=element,模型样本=fit.examples,终检估算=round(value,4),置信距离=round(distance,3),历史偏移=round(drift,4)))
         tolerance_records.append(dict(炉次=heat,支持样本=errors.support,**decision))
+        tolerance_by_key[heat,element]=dict(decision,distance=distance)
     formal=dosing.inspect(work)
     verdict, used=dosing.correction_plan(formal.records,config["scale"],total_allowance)
     planned={(row["heat"],row["element"]) for row in verdict}
@@ -102,7 +105,14 @@ def run(capacity: int | None = None) -> dict:
     handover, unlinked=finishing.status_by_element(expected,verdict,final)
     readiness=finishing.handover_totals(handover)
     rows=[dict(line,**lookup.get((line["heat"],line["element"]),{})) for line in sorted(verdict,key=lambda row:(row["heat"],row["element"]))]
-    return {"metrics":{"可交割炉次":readiness["交割通过"],"复验预留单位":sum(used.values()),"待交割炉次":readiness["总炉次"]-readiness["交割通过"],"有效化验组":len(measurements)},
+    certificate_holds=reviews.certificate_holds(certificate_alerts,bad_material)
+    queue_heats={row["heat"] for row in verdict} | set(certificate_holds) | {row["heat"] for row in measurements}
+    queue=reviews.shift_queue(measurements=measurements,tolerance=tolerance_by_key,lab_reviews=lab_reviews,
+                              slips=input_assays.records,day=config["day"],heats=queue_heats,
+                              certificates=certificate_holds,support_limit=config["distance_limit"],missing=missing)
+    queue_totals=reviews.queue_totals(queue)
+    return {"metrics":{"可交割炉次":readiness["交割通过"],"复验预留单位":sum(used.values()),"待交割炉次":readiness["总炉次"]-readiness["交割通过"],"有效化验组":len(measurements),
+                       "复验队列炉次":queue_totals["复验炉次"],"需复验炉次":queue_totals["需复验炉次"]},
             "columns":{"heat":"炉次","grade":"牌号","element":"合金元素","pre_pct":"炉前测值（%）","predicted":"估计终检（%）","low":"区间下界","high":"区间上界","approved_units":"预留台架单位","reason":"处置"},
             "rows":rows,"series":[dict(label=line["heat"]+"/"+line["element"],value=line["predicted"]) for line in rows if "predicted" in line][:16],
             "stages":[workstep("化验记录",f"{len(measurements)} 组双化验可用，排除 {len(bad_lab)+len(input_assays.rejected)} 条",measurements+bad_lab+[record.evidence() for record in lab_reviews]),
@@ -112,4 +122,7 @@ def run(capacity: int | None = None) -> dict:
                       workstep("称料纠偏",f"台架预留 {sum(used.values())}，当班额度 {total_allowance}",rows),
                       workstep("炉前交割",f"全部成分通过 {readiness['交割通过']} 炉",final+[item.evidence() for item in handover]+unlinked)],
             "readiness":readiness,"archive_replay":[item.evidence() for item in saved_trials],
+            "review_queue":{"totals":queue_totals,
+                            "columns":{"炉次":"炉次","去向":"去向","依据":"依据","涉及元素":"涉及元素","台位":"台位","置信距离":"置信距离"},
+                            "records":reviews.queue_evidence(queue)},
             "audit_id":finishing.proof_signature({**config,"selected_cap":total_allowance},[part[1] for part in batches],final)}

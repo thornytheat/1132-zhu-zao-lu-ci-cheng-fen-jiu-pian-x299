@@ -12,6 +12,7 @@
 | M4 风险分级 | 校准测量不确定性并拦截域外工况 | 运行证据第 4 段 | `src/foundrychem/alloy_tolerance/contracts.py` `src/foundrychem/alloy_tolerance/analysis.py` `src/foundrychem/alloy_tolerance/service.py` | `tests/test_alloy_tolerance.py` |
 | M5 称料纠偏 | 基于台架步进和事先限额发放台架预留 | 运行证据第 5 段 | `src/foundrychem/charge_correction/contracts.py` `src/foundrychem/charge_correction/analysis.py` `src/foundrychem/charge_correction/service.py` | `tests/test_charge_correction.py` |
 | M6 炉前交割 | 复验和终检签字，只有完整成分组允许交割 | 运行证据第 6 段 | `src/foundrychem/heat_release/contracts.py` `src/foundrychem/heat_release/analysis.py` `src/foundrychem/heat_release/service.py` | `tests/test_heat_release.py` |
+| M7 当班复验队列 | 按台位证据一致性给每炉唯一下一步去向 | 炉次纠偏页面「当班复验队列」 | `src/foundrychem/review_queue/analysis.py` `src/foundrychem/review_queue/service.py` | `tests/test_review_queue.py` |
 
 ## 陷阱登记
 
@@ -25,3 +26,8 @@
 | TRAP-43 | 没有留出验证数据 | 超差率除零 | 保留未知状态且禁自动审批 | `src/foundrychem/alloy_tolerance/analysis.py` | `tests/test_alloy_tolerance.py::test_empty_holdout_yields_undefined_exceedance` |
 | TRAP-44 | 偏离历史温区但化验的点值正常 | 忽视工况支持，误判合格 | 联用预测区间与历史距离做挂起 | `src/foundrychem/alloy_tolerance/analysis.py` | `tests/test_alloy_tolerance.py::test_nominal_estimate_does_not_release_out_of_support_heat` |
 | TRAP-53 | 混入极端炉次的批量复核 | 其他炉次改变已有炉号的参考尺度 | 以固定训练期稳健尺度逐炉复核 | `src/foundrychem/chemistry_residuals/analysis.py` | `tests/test_chemistry_residuals.py::test_score_of_one_heat_independent_of_batched_order` |
+| TRAP-61 | 单台抽样偏差使整炉超差 | 一台偏离、另一台与终检估算吻合时误停炉 | 逐台比对置信区间，单台偏离归为查台位后继续生产 | `src/foundrychem/review_queue/analysis.py` | `tests/test_review_queue.py::test_single_station_deviation_reopens_release_instead_of_stopping` |
+| TRAP-62 | 两台台位一致但工况远离历史支持 | 只看点值正常而放行，或反之白停 | 两台一致且置信距离超出历史支持才停炉复检 | `src/foundrychem/review_queue/analysis.py` | `tests/test_review_queue.py::test_two_agreeing_stations_beyond_historical_support_stop_the_furnace` |
+| TRAP-63 | 凭证撤销后补做化验 | 以新化验绕过撤销，整炉恢复交割 | 凭证状态优先于化验证据，撤销炉次固定凭证待查 | `src/foundrychem/review_queue/service.py` | `tests/test_review_queue.py::test_certificate_hold_cannot_be_cleared_by_fresh_assays` |
+| TRAP-64 | 迟到的旧修订与同台位复测重试 | 队列为同一炉次新增多条记录 | 队列以炉次为唯一键，仅取当前修订并合并台位中位数 | `src/foundrychem/review_queue/analysis.py` | `tests/test_review_queue.py::test_late_old_revision_cannot_add_or_move_a_queue_record` |
+| TRAP-65 | 只对个别炉次补证或补测 | 其他炉次去向被连带改写 | 去向逐炉裁定，补证只替换对应炉次 | `src/foundrychem/review_queue/analysis.py` | `tests/test_review_queue.py::test_supplementary_current_revision_only_changes_that_heat` |

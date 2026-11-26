@@ -1,8 +1,8 @@
 .shell {display:grid;grid-template-columns:199px minmax(0,1fr);min-height:100vh;}
-.board {display:grid;grid-template-columns:minmax(0, 1.6fr) minmax(0, .95fr);grid-template-areas:"signal evidence" "decisions evidence";gap:19px;}
-.signal {grid-area:signal;} .decisions {grid-area:decisions;} .evidence {grid-area:evidence;}
+.board {display:grid;grid-template-columns:minmax(0, 1.6fr) minmax(0, .95fr);grid-template-areas:"signal evidence" "decisions evidence" "queue evidence";gap:19px;}
+.signal {grid-area:signal;} .decisions {grid-area:decisions;} .queue {grid-area:queue;} .evidence {grid-area:evidence;}
 .masthead {background:var(--background);border:none;border-top:1px solid var(--border);border-bottom:1px solid var(--border);} .panel.signal {background:var(--rail);border:2px solid var(--border);} .kpi {border-width:0 0 4px;} .rail {border-right:1px solid var(--border);} 
-@media (max-width:1030px) {.board {grid-template-columns:minmax(0,1fr);grid-template-areas:"signal" "decisions" "evidence";}}
+@media (max-width:1030px) {.board {grid-template-columns:minmax(0,1fr);grid-template-areas:"signal" "decisions" "queue" "evidence";}}
 @media (max-width:710px) {
     .shell {grid-template-columns:minmax(0,1fr);}
     .rail {padding:10px 14px;border-radius:0;}

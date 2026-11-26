@@ -50,3 +50,13 @@ def test_large_request_returns_structured_error():
     response = application.test_client().post("/api/scenario", json={"capacity": "X" * 9000})
     assert response.status_code == 413
     assert response.get_json()["code"] == "REQUEST_TOO_LARGE"
+
+
+def test_overview_carries_review_queue_and_page_mounts_it():
+    client = application.test_client()
+    model = client.get("/api/overview").get_json()
+    queue = model["review_queue"]
+    assert queue["records"] and queue["totals"]["复验炉次"] == len(queue["records"])
+    assert len({row["炉次"] for row in queue["records"]}) == len(queue["records"])
+    body = client.get("/").get_data(as_text=True)
+    assert "当班复验队列" in body and 'id="review-queue"' in body

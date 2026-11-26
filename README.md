@@ -8,7 +8,7 @@
 docker compose up --build -d
 ```
 
-打开 `http://127.0.0.1:18211/` 查看炉次纠偏单。左侧六个入口可展开运行证据。调整「炉次纠偏限量」，点击「重算纠偏」比较处置结果。结束后执行 `docker compose down --remove-orphans`。
+打开 `http://127.0.0.1:18211/` 查看炉次纠偏单。左侧六个入口可展开运行证据。调整「炉次纠偏限量」，点击「重算纠偏」比较处置结果。「当班复验队列」为每炉列出唯一下一步去向：查台位、停炉复检、凭证待查或按纠偏复验。结束后执行 `docker compose down --remove-orphans`。
 
 ## 独立业务模块
 
@@ -18,6 +18,7 @@ docker compose up --build -d
 - 风险分级 `alloy_tolerance`
 - 称料纠偏 `charge_correction`
 - 炉前交割 `heat_release`
+- 当班复验队列 `review_queue`
 
 ## 查看运行结果
 

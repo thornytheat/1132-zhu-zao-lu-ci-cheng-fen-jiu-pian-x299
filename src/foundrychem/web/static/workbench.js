@@ -3,6 +3,7 @@ const stageLinks = [...document.querySelectorAll('[data-stage]')];
 let active;
 let selection = null;
 let selectedRow = null;
+let selectedLabels = null;
 const formatter = new Intl.NumberFormat('zh-CN', {maximumFractionDigits: 3});
 
 function text(value) {
@@ -82,6 +83,30 @@ function renderMetrics(metrics) {
     byId('metrics').replaceChildren(...items);
 }
 
+function renderQueue(queue) {
+    const target = byId('review-queue');
+    target.replaceChildren();
+    if (!queue || !queue.records?.length) {
+        byId('queue-summary').textContent = '';
+        target.append(named('p', '当前条件下没有复验记录', 'empty'));
+        return;
+    }
+    const totals = queue.totals ?? {};
+    byId('queue-summary').textContent =
+        `${totals['复验炉次'] ?? queue.records.length} 炉 · 需复验 ${totals['需复验炉次'] ?? '—'} · ` +
+        `查台位 ${totals['查台位炉次'] ?? 0} · 停炉 ${totals['停炉复检炉次'] ?? 0} · 凭证 ${totals['凭证待查炉次'] ?? 0}`;
+    renderTable(target, queue.records, queue.columns, openQueueRecord);
+}
+
+function openQueueRecord(record) {
+    selectedRow = record;
+    selectedLabels = active.review_queue?.columns;
+    selection = 'record';
+    renderEvidence();
+    byId('evidence-heading').focus({preventScroll:true});
+    byId('evidence').scrollIntoView({block:'nearest'});
+}
+
 function renderRows() {
     const query = byId('row-filter').value.toLocaleLowerCase().trim();
     const visible = active.rows.filter((record) => Object.values(record).some((entry) => text(entry).toLocaleLowerCase().includes(query)) || !query);
@@ -91,6 +116,7 @@ function renderRows() {
 
 function openRecord(record) {
     selectedRow = record;
+    selectedLabels = active.columns;
     selection = 'record';
     renderEvidence();
     byId('evidence-heading').focus({preventScroll:true});
@@ -107,7 +133,7 @@ function renderEvidence() {
         byId('evidence-summary').textContent = '';
         const list = named('dl', undefined, 'record-details');
         Object.entries(selectedRow).forEach(([key, value]) => {
-            list.append(named('dt', active.columns[key] ?? key), named('dd', value));
+            list.append(named('dt', selectedLabels?.[key] ?? active.columns[key] ?? key), named('dd', value));
         });
         byId('stage-records').replaceChildren(list);
         return;
@@ -134,6 +160,7 @@ function render(snapshot) {
     byId('export').disabled = false;
     renderMetrics(snapshot.metrics);
     renderRows();
+    renderQueue(snapshot.review_queue);
     renderEvidence();
     const chart = byId('chart');
     chart.replaceChildren();
