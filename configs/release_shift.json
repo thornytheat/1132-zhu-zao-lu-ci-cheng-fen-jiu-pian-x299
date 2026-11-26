@@ -1,0 +1,45 @@
+{
+  "day": 63,
+  "holdout_mark": 53,
+  "assay_spread": 0.036,
+  "capacity": 45,
+  "required_support": 4,
+  "distance_limit": 7.5,
+  "grade_bounds": {
+    "园林-CT": {
+      "Mn": [
+        0.69,
+        0.98
+      ],
+      "Si": [
+        1.54,
+        1.91
+      ]
+    },
+    "座体-NG": {
+      "Mn": [
+        0.59,
+        0.87
+      ],
+      "Si": [
+        1.35,
+        1.66
+      ]
+    }
+  },
+  "scale": {
+    "Mn": {
+      "gain": 12.0,
+      "step": 2,
+      "limit": 36
+    },
+    "Si": {
+      "gain": 10.0,
+      "step": 3,
+      "limit": 45
+    }
+  },
+  "repeat_limit": 0.022,
+  "replay_days": 4,
+  "ridge": 0.15
+}

@@ -1,0 +1,11 @@
+:root {
+    color-scheme: dark;
+    --bg: #2e2018; --background: var(--bg);
+    --surface: #402d24; --ink: #fff1df; --muted: #e2bca3;
+    --accent: #ffb277; --border: #78523c; --wash: #5b3829;
+    --rail: #281508; --on-rail: #fbeadc; --on-accent: #15221a;
+    --error: #ffc0b5;
+    --display: "Trebuchet MS","PingFang SC",sans-serif; --type: "PingFang SC",sans-serif;
+    --radius: 8px; --gutter: 30px; --title: 39px;
+    --base: 14px;
+}

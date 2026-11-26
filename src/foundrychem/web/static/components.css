@@ -1,0 +1,53 @@
+* {box-sizing:border-box;}
+body {margin:0;background:var(--background);color:var(--ink);font:var(--base)/1.55 var(--type);font-variant-numeric:tabular-nums;}
+button,input {font:inherit;}
+button {cursor:pointer;}
+button:disabled {cursor:default;opacity:.62;}
+button:focus-visible,input:focus-visible,a:focus-visible {outline:2px solid var(--accent);outline-offset:4px;}
+h1,h2,h3,p,dd {margin:0;}
+a {color:inherit;}
+.rail {background:var(--rail);color:var(--on-rail);padding:46px 12px;}
+.rail h2 {font-size:1rem;margin:0 0 38px 6px;letter-spacing:.04em;}
+.rail nav {display:flex;flex-direction:column;gap:7px;}
+.rail button {text-align:left;color:inherit;background:transparent;border:1px solid transparent;border-radius:var(--radius);padding:6px 12px;min-height:34px;}
+.rail button:hover,.rail button[aria-pressed="true"] {background:color-mix(in srgb,var(--on-rail) 20%,transparent);border-color:color-mix(in srgb,var(--on-rail) 38%,transparent);}
+.content {min-width:0;padding:var(--gutter);}
+.masthead {padding:38px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:18px;border:1px solid var(--border);background:var(--surface);}
+.masthead h1 {font:750 var(--title)/1.16 var(--display);letter-spacing:-0.014em;overflow-wrap:anywhere;}
+.scenario {display:flex;gap:8px 11px;align-items:end;flex-wrap:wrap;}
+.scenario label {display:grid;gap:4px;color:var(--muted);font-size:.84rem;}
+input {width:100%;min-width:0;min-height:37px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--background);color:var(--ink);}
+.scenario input {width:137px;}
+.primary,.quiet {min-height:37px;padding:8px 10px;border-radius:var(--radius);font-weight:650;}
+.primary {background:var(--accent);color:var(--on-accent);border:1px solid #0000;letter-spacing:0.055em;}
+.quiet {background:var(--surface);border-style:solid;background-color:var(--surface);color:var(--ink);border:1px solid var(--border);}
+.kpis {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0;}
+.kpi {background:var(--surface);padding:13px 13px;border:1px solid var(--border);border-radius:var(--radius);min-width:0;}
+.kpi dt {color:var(--muted);font-size:0.868rem;}
+.kpi dd {font-size:clamp(1rem,2.55vw,1.62rem);font-weight:750;overflow-wrap:anywhere;}
+.panel {min-width:0;padding:13px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);}
+.panel-heading {display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px;}
+.panel-heading h2 {font-size:1.135rem;}
+.panel-heading p,.empty {color:var(--muted);font-size:0.898rem;}
+.panel-heading input {width:min(213px,100%);}
+.table-scroll {max-height:354px;overflow:auto;}
+table {border-collapse:collapse;width:100%;font-size:0.868rem;text-align:left;}
+th {position:sticky;top:0;background:var(--surface);color:var(--muted);white-space:nowrap;}
+th,td {border-bottom:1px solid var(--border);padding:7px 10px;}
+td {min-width:53px;max-width:237px;overflow-wrap:anywhere;}
+.record-link {background:none;color:var(--accent);border:0;text-decoration:underline;text-underline-offset:3px;padding:2px;text-align:left;}
+.record-details {display:grid;grid-template-columns:minmax(91px,auto) minmax(0,1fr);gap:9px;margin:0;}
+.record-details dt {color:var(--muted);}
+.chart {padding:7px 0;overflow:hidden;}
+.chart svg {display:block;width:100%;height:auto;max-height:268px;}
+.chart-grid {stroke:var(--border);}
+.chart-caption {fill:var(--muted);font-size:11px;}
+.series-line {fill:none;stroke:var(--accent);stroke-width:2.3;}
+.chart-dot {fill:var(--accent);}
+.statusbar {display:flex;justify-content:space-between;align-items:center;gap:9px 13px;flex-wrap:wrap;margin-top:18px;border-top:1px solid var(--border);padding-top:9px;color:var(--muted);font-size:.85rem;}
+.statusbar code {color:var(--ink);}
+.error {color:var(--error);font-weight:700;}
+.skip {position:fixed;left:8px;top:8px;z-index:5;transform:translateY(-180%);background:var(--surface);padding:6px;}
+.skip:focus {transform:none;}
+
+.chart svg {background-image:repeating-linear-gradient(0deg,transparent,transparent 23px,var(--border) 24px),repeating-linear-gradient(90deg,transparent,transparent 23px,var(--border) 24px);} .series-line{stroke-width:2;} .chart-caption{paint-order:stroke;stroke:var(--rail);stroke-width:4px;stroke-linejoin:round;} 
